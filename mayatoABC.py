@@ -2,12 +2,10 @@
 import os
 from tkinter import *
 
-
 def exportAllABC():
     '''
     用mel写的maya export ABC，通过python发到cmd执行
     '''
-
     # 获取GUI界面参数
     mayaEXE = mayaInstPath.get()+'/bin/mayabatch.exe'
     mayaAbsEXE = correctWinPath(mayaEXE)
@@ -52,42 +50,65 @@ def correctWinPath(path):
     return windowsPath
 
 def filterFileExt(mayaAbsPath, fileExt):
-    # 过滤目录是否有对应格式的文件
+    '''
+    过滤目录是否有对应格式的文件
+    '''
     fileLists = [i for i in os.listdir(mayaAbsPath) if os.path.isfile(mayaAbsPath+'/'+i)]
     Files = [i for i in fileLists if os.path.splitext(i)[1] in fileExt]
     return Files
 
+def about():
+    tk = Tk()
+    tk.title('关于')
+    tkWinWidth = 300
+    tkWinHeigth = 80
+    screenWidth = tk.winfo_screenwidth()
+    screenHeight = tk.winfo_screenheight()
+    tkWinXPos = (screenWidth - tkWinWidth) / 2
+    tkWinYPos = (screenHeight - tkWinHeigth) / 2
+    tk.geometry( "%dx%d+%d+%d" % (tkWinWidth,tkWinHeigth,tkWinXPos,tkWinYPos))
+    Label(tk,text='制作：天雷动漫').grid(row=0,column=0,sticky='w')
+    Label(tk,text='测试环境：python3.7 maya2018').grid(row=0,column=1,sticky='w')
+    Label(tk,text='源码：https://github.com/HandierChan/mayatoABC').grid(row=2,sticky='w',columnspan=2)
 
+# tkinter窗口
 tk = Tk()
 tk.title('mayaExportABC')
-tk.iconbitmap('C:/aa.ico')
-tk.geometry('650x150+500+500')
+#tk.iconbitmap('C:/aa.ico')
+tk.resizable(0,0)
+tkWinWidth = 700
+tkWinHeigth = 150
+screenWidth = tk.winfo_screenwidth()
+screenHeight = tk.winfo_screenheight()
+tkWinXPos = (screenWidth - tkWinWidth) / 2
+tkWinYPos = (screenHeight - tkWinHeigth) / 2
+tk.geometry( "%dx%d+%d+%d" % (tkWinWidth,tkWinHeigth,tkWinXPos,tkWinYPos))
 
-# 初始tkinter变量
+# 初始变量
 mayaVarInstPath = StringVar(tk, value=r'C:\Program Files\Autodesk\Maya2018')
 mayaVarPath = StringVar(tk)
 abcVarPath = StringVar(tk)
 
 # GUI界面元素
-mayaInstPathLabel = Label(tk, text='Maya Install Path', fg='gray')
-mayaInstPath = Entry(tk, textvariable=mayaVarInstPath, fg='gray')
+mayaInstPathLabel = Label(tk, text='Maya Install Path')
+mayaInstPath = Entry(tk, textvariable=mayaVarInstPath)
 mayaFileLabel = Label(tk, text='Maya File or Path')
 mayaPathEntry = Entry(tk, textvariable=mayaVarPath)
 abcPathLabel = Label(tk, text='ABC Path')
 abcPathEntry = Entry(tk, textvariable=abcVarPath)
-noticeLabel = Label(tk, text='( Maya 和 ABC 路径目前不支持空格)',fg='green')
-convert = Button(tk, text='Convert', command = exportAllABC)
-copyright = Button(tk, text='天雷动漫 github.com/HandierChan/mayatoABC')
+noticeLabel = Label(tk, text='( Maya 和 ABC 路径目前不支持中文和空格)',fg='green')
+convertButton = Button(tk, text='Convert', command = exportAllABC)
+aboutLabel = Button(tk,text='关于',command=about)
 
 # GUI界面布局
-mayaInstPathLabel.grid(row=0, sticky='e')
-mayaInstPath.grid(row=0, column=1, sticky='we',ipadx=60)
-mayaFileLabel.grid(row=1, sticky='e')
-mayaPathEntry.grid(row=1, column=1, sticky='we',columnspan=2,ipadx=60)
-abcPathLabel.grid(row=2, sticky='e')
-abcPathEntry.grid(row=2, column=1, sticky='we',columnspan=2,ipadx=60)
+mayaInstPathLabel.grid(row=0, sticky='e',ipadx=10)
+mayaInstPath.grid(row=0, column=1, sticky='w',ipadx=80)
+mayaFileLabel.grid(row=1, sticky='e',ipadx=10)
+mayaPathEntry.grid(row=1, column=1, sticky='w',ipadx=200,columnspan=2)
+abcPathLabel.grid(row=2, sticky='e',ipadx=10)
+abcPathEntry.grid(row=2, column=1, sticky='w',ipadx=200,columnspan=2)
 noticeLabel.grid(row=3, column=1, sticky='w')
-convert.grid(row=4, column=1,sticky='w')
-copyright.grid(row=4, column=2,sticky='e')
+convertButton.grid(row=4, column=1, sticky='w', ipadx=20)
+aboutLabel.grid(row=4,column=2,sticky='e')
 
 tk.mainloop()
