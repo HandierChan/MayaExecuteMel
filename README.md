@@ -8,10 +8,11 @@ cmd: `mayabatch.exe -file z:/a.ma -command "AbcExport -j \"-file z:/a.abc\";" `
 
 python: 
 
-'''
+```python
+mayaFile = 'z:/a.ma'
 commandLine = 'mayabatch.exe -file '+mayaFile+' -command '+'"AbcExport -j \\"-file z:/a.abc\\";"'
 os.system(commandLine)
-'''
+```
 
 # 有望那一天
 1. 可能会加上只导出某对象，比如camera
