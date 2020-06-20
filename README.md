@@ -4,12 +4,14 @@
 
 # 代码解释
 mayaGUI(mel):
+```bash
+AbcExport -j "-file z:/a.abc";
+```
 
-`AbcExport -j "-file z:/a.abc";`
-
-windows cmd:
-
-`mayabatch.exe -file z:/a.ma -command "AbcExport -j \"-file z:/a.abc\";" `
+windows(cmd):
+```bash
+mayabatch.exe -file z:/a.ma -command "AbcExport -j \"-file z:/a.abc\";"
+```
 
 python:
 
