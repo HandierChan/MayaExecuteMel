@@ -1,12 +1,17 @@
 # mayatoABC
-用python执行cmd来把maya导出成abc
+用 python 执行 cmd 来把 maya 文件(\*.ma \*.mb)导出成 alembic 文件(\*.abc)
 
-# 解释
-mayaGUI(mel): `AbcExport -j "-file z:/a.abc";`
 
-cmd: `mayabatch.exe -file z:/a.ma -command "AbcExport -j \"-file z:/a.abc\";" `
+# 代码解释
+mayaGUI(mel):
 
-python: 
+`AbcExport -j "-file z:/a.abc";`
+
+windows cmd:
+
+`mayabatch.exe -file z:/a.ma -command "AbcExport -j \"-file z:/a.abc\";" `
+
+python:
 
 ```python
 mayaFile = 'z:/a.ma'
