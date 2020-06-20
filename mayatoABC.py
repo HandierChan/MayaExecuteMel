@@ -73,7 +73,7 @@ def about():
 
 # tkinter窗口
 tk = Tk()
-tk.title('mayaExportABC')
+tk.title('MayatoABC')
 #tk.iconbitmap('C:/aa.ico')
 tk.resizable(0,0)
 tkWinWidth = 700
