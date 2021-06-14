@@ -1,7 +1,7 @@
 # win10 python3.9
 
 # python module
-import os,subprocess,re
+import os,subprocess
 from tkinter import *
 from tkinter import ttk
 from tkinter.filedialog import askdirectory,askopenfilenames
