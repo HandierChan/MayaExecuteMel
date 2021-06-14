@@ -1,5 +1,6 @@
 # 简介
 测试环境：win10, python3.9, maya2018
+
 用 python 执行 cmd 来把 maya 文件(\*.ma \*.mb)导出成 alembic 文件(\*.abc)
 
 # 说明
