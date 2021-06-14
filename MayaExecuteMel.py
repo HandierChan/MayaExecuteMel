@@ -75,7 +75,7 @@ def about():
     tk = Tk()
     tk.title('About')
     tkWinWidth = 350
-    tkWinHeigth = 200
+    tkWinHeigth = 230
     screenWidth = tk.winfo_screenwidth()
     screenHeight = tk.winfo_screenheight()
     tkWinXPos = (screenWidth - tkWinWidth) / 2
@@ -96,16 +96,6 @@ def tkGUIPosition(tkinter,addWidth=10,addHight=10):
     screenWidth = tkinter.winfo_screenwidth()
     screenHeight = tkinter.winfo_screenheight()
     tkinter.geometry("%dx%d+%d+%d"%(tkGUIWidth+addWidth,tkGUIHeigth+addHight,(screenWidth-tkGUIWidth)/2,(screenHeight-tkGUIHeigth)/2))
-
-def createAppDataPath(softwareName='',dataFolder=''):
-    # win10 %appdata% 创建文件夹，放用户数据
-    appdataPath=os.getenv('appdata')
-    pathName=os.path.normpath(f'{appdataPath}/{softwareName}/{dataFolder}')
-    if not os.path.exists(pathName):
-        try:os.makedirs(pathName)
-        except:pass
-    else:return pathName
-
 
 if __name__=='__main__':
     softwareName='MayaExecuteMel'
@@ -189,15 +179,13 @@ AbcExport -j $melCommand;'''
             }
         return historyConfig
     def quitWindow():
-        try:configFile.configDictToFile(createAppDataPath(softwareName,'presets')+'/history.txt',getHistoryConfig())
+        try:configFile.configDictToFile(configFile.createAppDataPath(softwareName,'presets')+'/history.txt',getHistoryConfig())
         except:pass
         tk.quit()
         tk.destroy()
         exit()
-    configFileNameExt=createAppDataPath(softwareName,'presets')+'/history.txt'
-    try:configDict=configFile.configFileToDict(configFileNameExt)
-    except:pass
     try:
+        configDict=configFile.configFileToDict(configFile.createAppDataPath(softwareName,'presets')+'/history.txt')
         mayaInstallPathVar.set(configDict.get('MayaInstallPath'))
         deadlineInstallPathVar.set(configDict.get('DeadlineInstallPath'))
         outputPathVar.set(configDict.get('OutputPath'))

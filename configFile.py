@@ -11,9 +11,19 @@ def configDictToFile(pathFileNameExt,_dict):
 
 def configFileToDict(pathFileNameExt):
     with open(pathFileNameExt,'r',encoding='utf-8') as file:
-        txt=file.read()
+        try:txt=file.read()
+        except:pass
     _dict={k:v for i in txt.split('\n') for k,v in (i.split('='),)}
     return _dict
+
+def createAppDataPath(softwareName='',dataFolder=''):
+    # win10 %appdata% 创建文件夹，放用户数据
+    appdataPath=os.getenv('appdata')
+    pathName=os.path.normpath(f'{appdataPath}/{softwareName}/{dataFolder}')
+    if not os.path.exists(pathName):
+        try:os.makedirs(pathName)
+        except:pass
+    else:return pathName
 
 if __name__=='__main__':
     a='aaa'
