@@ -75,7 +75,7 @@ def about():
     tk = Tk()
     tk.title('About')
     tkWinWidth = 350
-    tkWinHeigth = 170
+    tkWinHeigth = 200
     screenWidth = tk.winfo_screenwidth()
     screenHeight = tk.winfo_screenheight()
     tkWinXPos = (screenWidth - tkWinWidth) / 2
@@ -83,10 +83,10 @@ def about():
     tk.geometry( "%dx%d+%d+%d" % (tkWinWidth,tkWinHeigth,tkWinXPos,tkWinYPos))
 
     Label(tk,justify='left',text='说明：\n1. 此脚本导出文件的格式，比如导出abc是 {###.abc}\n所以mel里面不要有冲突关键符“ {###. ”\n2. 直接执行mel，记得最后加上“ file -s; ”').grid(row=0,sticky='w')
-    Label(tk,text='').grid(row=1,sticky='w')
-    Label(tk,text=r'制作：天雷动漫').grid(row=2,sticky='w')
-    Label(tk,text=r'测试环境：win10 python3.9 maya2018').grid(row=3,sticky='w')
-    Label(tk,text=r'源码：https://github.com/handierchan/MayaExecuteMel').grid(row=4,sticky='w')
+    Label(tk,justify='left',text='').grid(row=1,sticky='w')
+    Label(tk,justify='left',text=r'制作：天雷动漫').grid(row=2,sticky='w')
+    Label(tk,justify='left',text=r'测试环境：win10 python3.9 maya2018').grid(row=3,sticky='w')
+    Label(tk,justify='left',text='源码：\nhttps://github.com/handierchan/MayaExecuteMel\nhttps://gitee.com/handierchan/MayaExecuteMel').grid(row=4,sticky='w')
 
 def tkGUIPosition(tkinter,addWidth=10,addHight=10):
     tkinter.resizable(0,0)
