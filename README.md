@@ -1,4 +1,4 @@
-# mayatoABC
+# 简介
 用 python 执行 cmd 来把 maya 文件(\*.ma \*.mb)导出成 alembic 文件(\*.abc)
 
 # 说明
