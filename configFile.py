@@ -10,11 +10,11 @@ def configDictToFile(pathFileNameExt,_dict):
         file.write(txt.strip())
 
 def configFileToDict(pathFileNameExt):
-    if not os.path.exists(pathFileNameExt): exit()
-    with open(pathFileNameExt,'r',encoding='utf-8') as file:
-        txt=file.read()
-    _dict={k:v for i in txt.split('\n') for k,v in (i.split('='),)}
-    return _dict
+    if os.path.exists(pathFileNameExt):
+        with open(pathFileNameExt,'r',encoding='utf-8') as file:
+            txt=file.read()
+        _dict={k:v for i in txt.split('\n') for k,v in (i.split('='),)}
+        return _dict
 
 def createAppDataPath(softwareName='',dataFolder=''):
     # win10 %appdata% 创建文件夹，放用户数据
