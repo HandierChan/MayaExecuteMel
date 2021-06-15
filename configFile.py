@@ -10,9 +10,9 @@ def configDictToFile(pathFileNameExt,_dict):
         file.write(txt.strip())
 
 def configFileToDict(pathFileNameExt):
+    if not os.path.exists(pathFileNameExt): exit()
     with open(pathFileNameExt,'r',encoding='utf-8') as file:
-        try:txt=file.read()
-        except:pass
+        txt=file.read()
     _dict={k:v for i in txt.split('\n') for k,v in (i.split('='),)}
     return _dict
 

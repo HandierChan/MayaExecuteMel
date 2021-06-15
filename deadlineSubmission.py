@@ -15,7 +15,7 @@ def submitToDeadline(deadlinePath='',JobInfo='',PluginInfo=''):
     PluginInfoFile=tempFileWrite('PluginInfo.job',PluginInfo)
     deadlinePath=f'{deadlinePath}/bin'
     command=f'''deadlinecommand.exe "{JobInfoFile}" "{PluginInfoFile}"'''
-    process=subprocess.run(command,cwd=deadlinePath,shell=True,encoding='utf-8',stdout=subprocess.PIPE)
+    process=subprocess.run(command,cwd=deadlinePath,shell=True,encoding='utf-8')
 
 def quickSubmit_CMD(deadlineInstallPath='',OutputDirectory='',jobName='',cmd=''):
     JobInfo=f'''

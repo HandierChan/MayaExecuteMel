@@ -192,16 +192,26 @@ AbcExport -j $melCommand;'''
     except:pass
 
     ### Mouse Drag
+    def mayaInstallPathEntry_MouseDrag(files):
+        if os.path.isdir(files[0]): mayaInstallPathVar.set(files[0])
+    def deadlineInstallPathEntry_MouseDrag(files):
+        if os.path.isdir(files[0]): deadlineInstallPathVar.set(files[0])
     def mayaFilesEntry_MouseDrag(files):
-        _files='; '.join((i for i in files))
-        mayaFilesVar.set(_files)
+        filesFilters=[i for i in files if os.path.isfile(i)]
+        filesList='; '.join((i for i in filesFilters))
+        mayaFilesVar.set(filesList)
+    def outputPathEntry_MouseDrag(files):
+        if os.path.isdir(files[0]): outputPathVar.set(files[0])
     def melCommandScrolledText_MouseDrag(files):
         with open(files[0], "r", encoding='utf-8') as r:
             try:text=r.read()
             except:text=''
         melCommandScrolledText.delete(1.0,END)
         melCommandScrolledText.insert(1.0,text)
+    windnd.hook_dropfiles(mayaInstallPathEntry,func=mayaInstallPathEntry_MouseDrag,force_unicode=1)
+    windnd.hook_dropfiles(deadlineInstallPathEntry,func=deadlineInstallPathEntry_MouseDrag,force_unicode=1)
     windnd.hook_dropfiles(mayaFilesEntry,func=mayaFilesEntry_MouseDrag,force_unicode=1)
+    windnd.hook_dropfiles(outputPathEntry,func=outputPathEntry_MouseDrag,force_unicode=1)
     windnd.hook_dropfiles(melCommandScrolledText,func=melCommandScrolledText_MouseDrag,force_unicode=1)
 
     # Button 颜色事件
