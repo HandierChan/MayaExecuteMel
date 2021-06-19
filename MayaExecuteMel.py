@@ -44,7 +44,7 @@ def executeCmd(execute=False,deadline=False):
             elif not deadline: subprocess.run(localExecuteCmd,cwd=mayaInstallPath,shell=True,encoding="utf-8",check=False)
         elif deadline: print(submitDeadlineCmd)
         elif not deadline: print(localExecuteCmd)
-
+    doneMessage(tk)
 def correctWinPath(path):
     '''
     纠正路径错误：1反斜杠改成正斜杠；2带空格的目录加上双引号
@@ -71,22 +71,38 @@ def filterFileExt(path=r'c:/a.txt', fileExt=['.txt','.mp4']):
         file.append(path)
         return file
 
-def about():
-    tk = Tk()
-    tk.title('About')
-    tkWinWidth = 350
-    tkWinHeigth = 230
-    screenWidth = tk.winfo_screenwidth()
-    screenHeight = tk.winfo_screenheight()
-    tkWinXPos = (screenWidth - tkWinWidth) / 2
-    tkWinYPos = (screenHeight - tkWinHeigth) / 2
-    tk.geometry( "%dx%d+%d+%d" % (tkWinWidth,tkWinHeigth,tkWinXPos,tkWinYPos))
+def about(mainTk):
+    top=Toplevel()
+    mainWidth=mainTk.winfo_width()
+    mainHight=mainTk.winfo_height()
+    mainXPos=mainTk.winfo_x()
+    mainYPos=mainTk.winfo_y()
+    ToplevelWidth=350
+    ToplevelHight=230
+    ToplevelXPos=(mainWidth-ToplevelWidth)/2+mainXPos
+    ToplevelYPos=(mainHight-ToplevelHight)/2+mainYPos
+    top.geometry( "%dx%d+%d+%d" % (ToplevelWidth,ToplevelHight,ToplevelXPos,ToplevelYPos))
+    Label(top,justify='left',text='说明：\n1. 此脚本导出文件的格式，比如导出abc是 {###.abc}\n所以mel里面不要有冲突关键符“ {###. ”\n2. 直接执行mel，记得最后加上“ file -s; ”').grid(row=0,sticky='w')
+    Label(top,justify='left',text='').grid(row=1,sticky='w')
+    Label(top,justify='left',text=r'制作：天雷动漫').grid(row=2,sticky='w')
+    Label(top,justify='left',text=r'测试环境：win10 python3.9 maya2018').grid(row=3,sticky='w')
+    Label(top,justify='left',text='源码：\nhttps://github.com/handierchan/MayaExecuteMel\nhttps://gitee.com/handierchan/MayaExecuteMel').grid(row=4,sticky='w')
+    Button(top,text='退出',command=lambda:top.destroy()).grid(row=5,sticky='w')
 
-    Label(tk,justify='left',text='说明：\n1. 此脚本导出文件的格式，比如导出abc是 {###.abc}\n所以mel里面不要有冲突关键符“ {###. ”\n2. 直接执行mel，记得最后加上“ file -s; ”').grid(row=0,sticky='w')
-    Label(tk,justify='left',text='').grid(row=1,sticky='w')
-    Label(tk,justify='left',text=r'制作：天雷动漫').grid(row=2,sticky='w')
-    Label(tk,justify='left',text=r'测试环境：win10 python3.9 maya2018').grid(row=3,sticky='w')
-    Label(tk,justify='left',text='源码：\nhttps://github.com/handierchan/MayaExecuteMel\nhttps://gitee.com/handierchan/MayaExecuteMel').grid(row=4,sticky='w')
+def doneMessage(mainTk):
+    top=Toplevel()
+    mainWidth=mainTk.winfo_width()
+    mainHight=mainTk.winfo_height()
+    mainXPos=mainTk.winfo_x()
+    mainYPos=mainTk.winfo_y()
+    ToplevelWidth=150
+    ToplevelHight=80
+    ToplevelXPos=(mainWidth-ToplevelWidth)/2+mainXPos
+    ToplevelYPos=(mainHight-ToplevelHight)/2+mainYPos
+    top.geometry( "%dx%d+%d+%d" % (ToplevelWidth,ToplevelHight,ToplevelXPos,ToplevelYPos))
+    top.attributes('-topmost',True)
+    Message(top,text='完成').pack()
+    Button(top,text='退出',command=lambda:top.destroy()).pack()
 
 def tkGUIPosition(tkinter,addWidth=10,addHight=10):
     tkinter.resizable(0,0)
@@ -166,7 +182,7 @@ AbcExport -j $melCommand;'''
     localConvertButton.grid(row=6,column=1,sticky='w')
     submitToDeadlineButton=Button(tk,text='Submit to Deadline',fg='green',width=20,command=lambda:executeCmd(execute=1,deadline=1))
     submitToDeadlineButton.grid(row=6,column=1,sticky='w',padx=130)
-    aboutButton=Button(tk,text='About',command=about)
+    aboutButton=Button(tk,text='About',command=lambda:about(tk))
     aboutButton.grid(row=6, column=2, sticky='e')
 
     ### Save/Load history config
@@ -219,7 +235,7 @@ AbcExport -j $melCommand;'''
         event.widget.config(bg='DarkSeaGreen')
     def ReturnBGColor(event):
         event.widget.config(bg='SystemButtonFace')
-    for i in [defaultButton,mayaFilesButton,outputPathButton,localConvertButton,submitToDeadlineButton]:
+    for i in [mayaFilesButton,outputPathButton,localConvertButton,submitToDeadlineButton]:
         i.bind("<Enter>", SetBGColor)
         i.bind("<Leave>", ReturnBGColor)
 
