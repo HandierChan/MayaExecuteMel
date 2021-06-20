@@ -42,7 +42,7 @@ def generateCmdList():
 
         localExecuteCmd=f'''mayabatch.exe -file {i} -command "{melCommandCorrect}"'''
         localExecuteCmdList.append(localExecuteCmd)
-        
+
         submitDeadlineCmd=f'''{mayaInstallPathCorrect}/mayabatch.exe -file {i} -command "{melCommandCorrect}"'''
         submitDeadlineCmdList.append(submitDeadlineCmd)
     return mayaNameList,localExecuteCmdList,submitDeadlineCmdList
