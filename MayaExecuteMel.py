@@ -14,10 +14,8 @@ import configFile
 # extra module
 import windnd
 
-def executeCmd(execute=False,deadline=False):
-    deadlineInstallPath=deadlineInstallPathEntry.get()
-    mayaInstallPath=mayaInstallPathEntry.get()+'/bin'
-    _mayaInstallPath= correctWinPath(mayaInstallPathEntry.get()+'/bin')
+def generateCmdList():
+    mayaInstallPathCorrect= correctWinPath(mayaInstallPathEntry.get()+'/bin')
     outputPath = correctWinPath(outputPathEntry.get())
     melCommand = melCommandScrolledText.get(1.0,END).strip().replace('\n','').replace('\r','').replace('"',r'\"')
     # if has {###.abc}, !!!! need to rewrite
@@ -33,18 +31,43 @@ def executeCmd(execute=False,deadline=False):
     # 修正每个maya文件路径格式
     mayaPathNameExtLists = [correctWinPath(i) for i in mayaPathNameExtLists]
     # 循环每个maya文件
+    localExecuteCmdList=[]
+    submitDeadlineCmdList=[]
+    mayaNameList=[]
     for i in mayaPathNameExtLists:
         mayaName = os.path.splitext(i)[0].split('/')[-1].lstrip('"')
+        mayaNameList.append(mayaName)
         # replace {###.abc} to outputName.ext
         melCommandCorrect = melCommand.replace('{###.'+fileExt+'}',f'{outputPath}/{mayaName}.{fileExt}')
+
         localExecuteCmd=f'''mayabatch.exe -file {i} -command "{melCommandCorrect}"'''
-        submitDeadlineCmd=f'''{_mayaInstallPath}/mayabatch.exe -file {i} -command "{melCommandCorrect}"'''
-        if execute:
-            if deadline: deadlineSubmission.quickSubmit_CMD(deadlineInstallPath,outputPath,mayaName,submitDeadlineCmd)
-            elif not deadline: subprocess.run(localExecuteCmd,cwd=mayaInstallPath,shell=True,encoding="utf-8",check=False)
-        elif deadline: print(submitDeadlineCmd)
-        elif not deadline: print(localExecuteCmd)
+        localExecuteCmdList.append(localExecuteCmd)
+        
+        submitDeadlineCmd=f'''{mayaInstallPathCorrect}/mayabatch.exe -file {i} -command "{melCommandCorrect}"'''
+        submitDeadlineCmdList.append(submitDeadlineCmd)
+    return mayaNameList,localExecuteCmdList,submitDeadlineCmdList
+
+def ExecuteCmd(execute=False):
+    mayaInstallPath=mayaInstallPathEntry.get()+'/bin'
+    if execute:
+        for i in generateCmdList()[1]:
+            subprocess.run(i,cwd=mayaInstallPath,shell=True,encoding="utf-8",check=False)
+    else:
+        for i in generateCmdList()[1]:
+            print(i)
     doneMessage(tk)
+
+def ExecuteSubmitDeadline(execute=False):
+    deadlineInstallPath=deadlineInstallPathEntry.get()
+    outputPath = correctWinPath(outputPathEntry.get())
+    if execute:
+        for i in range(len(generateCmdList()[0])):
+            deadlineSubmission.quickSubmit_CMD(deadlineInstallPath,outputPath,generateCmdList()[0][i],generateCmdList()[2][i])
+    else:
+        for i in range(len(generateCmdList()[0])):
+            print(generateCmdList()[2][i])
+    doneMessage(tk)
+
 def correctWinPath(path):
     '''
     纠正路径错误：1反斜杠改成正斜杠；2带空格的目录加上双引号
@@ -178,19 +201,19 @@ AbcExport -j $melCommand;'''
     melCommandScrolledText.grid(row=4,column=1,sticky='we',columnspan=2)
     melCommandScrolledText.focus()
     Label(tk, text='( Maya 文件路径不支持中文和空格)',fg='SaddleBrown').grid(row=5, column=1, sticky='w')
-    localConvertButton = Button(tk,text='Local Convert',fg='green',width=15,command=lambda:executeCmd(execute=1,deadline=0))
+    localConvertButton = Button(tk,text='Local Convert',fg='green',width=15,command=lambda:ExecuteCmd(1))
     localConvertButton.grid(row=6,column=1,sticky='w')
-    submitToDeadlineButton=Button(tk,text='Submit to Deadline',fg='green',width=20,command=lambda:executeCmd(execute=1,deadline=1))
+    submitToDeadlineButton=Button(tk,text='Submit to Deadline',fg='green',width=20,command=lambda:ExecuteSubmitDeadline(1))
     submitToDeadlineButton.grid(row=6,column=1,sticky='w',padx=130)
     aboutButton=Button(tk,text='About',command=lambda:about(tk))
     aboutButton.grid(row=6, column=2, sticky='e')
 
-    ### Save/Load history config
+    ### Save/Load History Config
     def getHistoryConfig():
         historyConfig={
             'MayaInstallPath':mayaInstallPathEntry.get(),
             'DeadlineInstallPath':deadlineInstallPathEntry.get(),
-            # 'MayaFiles':mayaFilesVar.get(),
+            'MayaFiles':mayaFilesVar.get(),
             'OutputPath':outputPathVar.get()
             }
         return historyConfig
@@ -204,6 +227,7 @@ AbcExport -j $melCommand;'''
         configDict=configFile.configFileToDict(configFile.createAppDataPath(softwareName,'presets')+'/history.txt')
         mayaInstallPathVar.set(configDict.get('MayaInstallPath'))
         deadlineInstallPathVar.set(configDict.get('DeadlineInstallPath'))
+        mayaFilesVar.set(configDict.get('MayaFiles'))
         outputPathVar.set(configDict.get('OutputPath'))
     except:pass
 
