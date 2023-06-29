@@ -1,1 +1,13 @@
-aa
+int $playbackStartFrame=`playbackOptions -q -ast`;
+int $playbackEndFrame=`playbackOptions -q -aet`;
+int $outputStartFrame=`getAttr defaultRenderGlobals.startFrame`;
+int $outputEndFrame=`getAttr defaultRenderGlobals.endFrame`;
+int $abcStartFrame,$abcEndFrame;
+if (`getAttr defaultRenderGlobals.animation`==1){
+    $abcStartFrame=$outputStartFrame; $abcEndFrame=$outputEndFrame;}
+else{
+    $abcStartFrame=$playbackStartFrame; $abcEndFrame=$playbackEndFrame;}
+
+string $frameRange="-frameRange "+$abcStartFrame+" "+$abcEndFrame;
+string $melCommand=$frameRange+" -uvWrite -worldSpace -writeVisibility -dataFormat ogawa -file {###.abc}";
+AbcExport -j $melCommand;

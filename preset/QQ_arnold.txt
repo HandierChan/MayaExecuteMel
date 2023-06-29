@@ -1,0 +1,92 @@
+string $deng_light="//data4/E/QQCM_S01/QQCM_S01_E01/Maya_Project/Lig/deng_v2.mb";
+
+global proc load_reference(string $file){
+    string $fileName=basenameEx($file);
+    if(catchQuiet(`file -q -rfn $file`)){
+        file -r $file;
+    }
+    string $ref_nodeName=`file -q -rfn $file`;
+    string $ref_fileName=`referenceQuery -f -shn $file`;
+    if(gmatch($ref_fileName, "\*"+$fileName+"*")){
+        if(`file -q -dr $file`){
+            file -lr $ref_nodeName;
+        }
+    }
+}
+
+global proc set_light(string $light){
+    string $sel[]=`ls -lights`;
+    if(size($sel)==0) {load_reference($light);}
+    else{
+         for($i in $sel){
+             if(gmatch(tolower($i),"*deng*")) {break;}
+             else {load_reference($light);}
+         }
+    }
+}
+set_light($deng_light);
+
+
+
+
+
+
+global proc set_camera(){
+    string $sel[]=`ls -cameras`;
+    for($i in $sel){
+        setAttr ($i+".renderable") 0;}
+    
+    string $cam_avail[];
+    for($i in $sel){
+        if(!gmatch($i,"*:*")){
+            $cam_avail=stringArrayCatenate($cam_avail,stringToStringArray($i,""));}
+    }
+    
+    int $match=0;
+    for($i in $cam_avail){
+        if(gmatch(tolower($i),"s*_*")&&!$match){
+            setAttr ($i+".renderable") 1;
+            $match=1; }}
+    for($i in $cam_avail){
+        if(gmatch(tolower($i),"*cam*")&&!$match){
+            setAttr ($i+".renderable") 1;
+            $match=1; }}
+    for($i in $cam_avail){
+        if(gmatch(tolower($i),"*persp*[0-9]*")&&!$match){
+            setAttr ($i+".renderable") 1;
+            $match=1; }}
+    for($i in $cam_avail){
+        if(gmatch(tolower($i),"*persp*")&&!$match){
+            setAttr ($i+".renderable") 1;
+            $match=1; }}
+
+}
+set_camera();
+
+
+
+
+
+
+if(!`objExists defaultArnoldDriver`) {loadPlugin mtoa;}
+setAttr "defaultRenderGlobals.currentRenderer" -type "string" "arnold";
+setAttr "defaultRenderGlobals.imageFilePrefix" -type "string" "<Scene>_<Camera>/<Scene>";
+setAttr "defaultArnoldDriver.ai_translator" -type "string" "png";
+setAttr "defaultArnoldDriver.colorManagement" 1;
+setMayaSoftwareFrameExt("7",0);
+setAttr "defaultRenderGlobals.animation" 1;
+setAttr "defaultRenderGlobals.startFrame" `playbackOptions -q -min`;
+setAttr "defaultRenderGlobals.endFrame" `playbackOptions -q -max`;
+setAttr "defaultResolution.width" 1920;
+setAttr "defaultResolution.height" 1080;
+setAttr "defaultResolution.pixelAspect" 1;
+setAttr "defaultArnoldRenderOptions.AASamples" 4;
+setAttr "defaultArnoldRenderOptions.GIDiffuseSamples" 3;
+
+
+
+
+file -s;
+
+
+

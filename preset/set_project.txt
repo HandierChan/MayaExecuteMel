@@ -1,0 +1,21 @@
+global proc set_project(){
+    string $file_path=`file -q -sn`;
+    string $file_path_array[];
+    tokenize($file_path,"/",$file_path_array);
+
+    for($i=size($file_path_array)-1;$i>=0;$i--){
+        if(!gmatch(tolower($file_path_array[$i]),"*maya*")){
+            stringArrayRemoveAtIndex($i,$file_path_array);
+        }
+        else {break;}
+    }
+    string $project_path=stringArrayToString($file_path_array,"/");
+
+    if (gmatch($file_path, "?:*")!=1){
+        $project_path=stringAddPrefix($project_path, "//");
+    }
+
+    setProject $project_path;
+}
+set_project();
+
