@@ -32,27 +32,26 @@ def generateCmdStruct():
         if re.search(re.escape(mayaMelMatch[i]),melCommand,re.I):
             melCommand = re.sub(re.escape(mayaMelMatch[i]),mayaMelMatchToCmd[i],melCommand,flags=re.I)
 
-    # mel代码中含有{###.abc}（这里需要优化代码??????????）
+    # mel代码中含有{###.abc}，用于输出文件格式比如abc（这里需要优化代码??????????）
     try:fileExt=melCommand.split("{###.")[1].split("}",1)[0]
     except:fileExt=''
 
     # 过滤所有maya文件
-    mayaPathNameExtFilterLists=mayaFilesEntry.get().split(';')
-    mayaPathNameExtLists=[]
-    for i in mayaPathNameExtFilterLists:
+    mayaFullNameFilterList=mayaFilesEntry.get().split(';')
+    mayaFullNameList=[]
+    for i in mayaFullNameFilterList:
         files = filterFileExt(i.strip(), ('.ma','.mb'))
         if files:
-            [mayaPathNameExtLists.append(j) for j in files]
+            [mayaFullNameList.append(j) for j in files]
 
     # 修正每个maya文件路径格式
-    mayaPathNameExtLists = [correctWinPath(i) for i in mayaPathNameExtLists]
+    mayaFullNameList = [correctWinPath(i) for i in mayaFullNameList]
+
 
     # 循环每个maya文件
-    mayaFile=[]
     localExecuteCmdList=[]
     submitDeadlineCmdList=[]
-    for i in mayaPathNameExtLists:
-        mayaFile.append(i)
+    for i in mayaFullNameList:
         mayaName = os.path.splitext(i)[0].split('/')[-1].lstrip('"')
         # replace {###.abc} to outputName.ext, use export ABC file
         melCommandCorrect = melCommand.replace('{###.'+fileExt+'}',f'{outputPath}/{mayaName}.{fileExt}')
@@ -62,9 +61,9 @@ def generateCmdStruct():
 
         submitDeadlineCmd=f'''{mayaInstallPathCorrect}/mayabatch.exe -file {i} -command "{melCommandCorrect}"'''
         submitDeadlineCmdList.append(submitDeadlineCmd)
-    return mayaFile,localExecuteCmdList,submitDeadlineCmdList,
+    return mayaFullNameList,localExecuteCmdList,submitDeadlineCmdList,
 
-def ExecuteLocalCmd(execute=False,message=False):
+def ExecuteLocalCmd(execute=False):
     '''
     本机执行代码，还是打印出来(用于测试)
     '''
@@ -75,8 +74,7 @@ def ExecuteLocalCmd(execute=False,message=False):
     else:
         for i in generateCmdStruct()[1]:
             print(i)
-    if message:
-        doneMessage(tk)
+    doneMessage(tk)
 
 def ExecuteCmdToDeadline(execute=False):
     '''
@@ -86,8 +84,8 @@ def ExecuteCmdToDeadline(execute=False):
     outputPath = correctWinPath(outputPathEntry.get())
     if execute:
         for i in range(len(generateCmdStruct()[0])):
-            file=generateCmdStruct()[0][i]
-            mayaName=os.path.splitext(os.path.basename(file))[0]
+            mayaFile=generateCmdStruct()[0][i]
+            mayaName=os.path.splitext(os.path.basename(mayaFile))[0]
             deadlineSubmission.quickCmdSubmit(deadlineInstallPath,outputPath,mayaName,generateCmdStruct()[2][i])
     else:
         for i in range(len(generateCmdStruct()[0])):
@@ -98,15 +96,14 @@ def ExecuteArnoldToDeadline(execute=False):
     '''
     提交给deadline执行代码，还是打印出来(用于测试)
     '''
-    ExecuteLocalCmd(1,0) #maya执行mel并保存
     deadlineInstallPath=deadlineInstallPathEntry.get()
+    mayaInstallPath=mayaInstallPathEntry.get()+'/bin'
     if execute:
         for i in range(len(generateCmdStruct()[0])):
-            file=generateCmdStruct()[0][i]
+            subprocess.run(generateCmdStruct()[1][i],cwd=mayaInstallPath,shell=True,encoding="utf-8",check=False)
             deadlineSubmission.quickArnoldSubmit(deadlineInstallPath,mayaInstallPathEntry.get()+'/bin',generateCmdStruct()[0][i])
     else:
         for i in range(len(generateCmdStruct()[0])):
-            file=generateCmdStruct()[0][i]
             print(generateCmdStruct()[2][i])
     doneMessage(tk)
 
@@ -245,7 +242,7 @@ if __name__=='__main__':
     melCommandScrolledText.grid(row=4,column=1,sticky='we',columnspan=2)
     melCommandScrolledText.focus()
     Label(tk, text='(1.Maya 文件路径不支持中文和空格；2.代码不支持中文和注释)',fg='SaddleBrown').grid(row=5, column=1, sticky='w')
-    localConvertButton = Button(tk,text='Local Render',fg='green',width=15,command=lambda:ExecuteLocalCmd(1,1))
+    localConvertButton = Button(tk,text='Local Render',fg='green',width=15,command=lambda:ExecuteLocalCmd(1))
     localConvertButton.grid(row=6,column=1,sticky='w')
     cmdToDeadlineButton=Button(tk,text='CMD to Deadline',fg='green',width=20,command=lambda:ExecuteCmdToDeadline(1))
     cmdToDeadlineButton.grid(row=6,column=1,sticky='w',padx=130)

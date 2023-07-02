@@ -64,7 +64,10 @@ print($frame_range);
     mayaFile=os.path.normpath(mayaFile)
     pattern=r'.+maya.*?[\\]'
     match = re.search(pattern,mayaFile,flags=re.I)
-    OutputDirectory=match.group(0)+'images'
+    if match:
+        OutputDirectory=match.group(0)+'images'
+    else:
+        OutputDirectory=r'c:/images'
 
     JobInfo=f'''
 Name={jobName}
