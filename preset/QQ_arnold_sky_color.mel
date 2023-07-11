@@ -1,0 +1,6 @@
+global proc set_background_color(){
+    if(!objExists("aiRaySwitch_QQ")){createNode aiRaySwitch -n "aiRaySwitch_QQ";}
+    setAttr "aiRaySwitch_QQ.camera" -type "float3" 0.053 0.896 0.181;
+    connectAttr "aiRaySwitch_QQ.msg" ":defaultArnoldRenderOptions.bkg";
+}
+set_background_color();
