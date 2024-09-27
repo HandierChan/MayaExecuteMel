@@ -8,9 +8,6 @@ if (`getAttr defaultRenderGlobals.animation`==1){
 else{
     $abcStartFrame=$playbackStartFrame; $abcEndFrame=$playbackEndFrame;}
 
-string $selects[]=`ls -sl`;
-string $singleSelectName=$selects[0];
-
 string $filePath=`file -q -sn`;
 string $filePathArray[]={};
 tokenize($filePath,"/",$filePathArray);
@@ -19,10 +16,12 @@ string $upperPath=stringArrayToString($filePathArray,"/");
 if (gmatch($filePath,"?:*")!=1){
     $upperPath=stringAddPrefix($upperPath,"//");}
 
-string $frameRange="-frameRange "+$abcStartFrame+" "+$abcEndFrame;
-string $abcParam=" -uvWrite -worldSpace -writeVisibility -dataFormat ogawa ";
-string $abcObject=" -root "+$singleSelectName;
-string $abcPath=$upperPath+"/"+$singleSelectName+".abc";
-string $melCommand=$frameRange+$abcParam+$abcObject+" -file "+$abcPath;
+string $selects[]=`ls -sl`;
+for($i in $selects){
+    string $frameRange="-frameRange "+$abcStartFrame+" "+$abcEndFrame;
+    string $abcParam=" -uvWrite -worldSpace -writeVisibility -dataFormat ogawa ";
+    string $abcObject=" -root "+$i;
+    string $abcPath=$upperPath+"/"+$i+".abc";
+    string $melCommand=$frameRange+$abcParam+$abcObject+" -file "+$abcPath;
 
-AbcExport -j $melCommand;
+    AbcExport -j $melCommand;}
