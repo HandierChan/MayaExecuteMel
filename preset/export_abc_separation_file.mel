@@ -1,0 +1,41 @@
+int $playbackStartFrame=`playbackOptions -q -ast`;
+int $playbackEndFrame=`playbackOptions -q -aet`;
+int $outputStartFrame=`getAttr defaultRenderGlobals.startFrame`;
+int $outputEndFrame=`getAttr defaultRenderGlobals.endFrame`;
+int $abcStartFrame,$abcEndFrame;
+if (`getAttr defaultRenderGlobals.animation`==1){
+    $abcStartFrame=$outputStartFrame; $abcEndFrame=$outputEndFrame;}
+else{
+    $abcStartFrame=$playbackStartFrame; $abcEndFrame=$playbackEndFrame;}
+
+string $filePath=`file -q -sn`;
+string $filePathArray[]={};
+tokenize($filePath,"/",$filePathArray);
+stringArrayRemoveAtIndex(size($filePathArray)-1,$filePathArray);
+string $upperPath=stringArrayToString($filePathArray,"/");
+if (gmatch($filePath,"?:*")!=1){
+    $upperPath=stringAddPrefix($upperPath,"//");}
+
+string $allGeometryLong[]=`ls -g -ca -l`;
+string $refineObjects[]={};
+for($i in $allGeometryLong){
+    string $splitStrings[];
+    tokenize($i,"|",$splitStrings);
+    string $firstGeometry = $splitStrings[0];
+    $refineObjects[size($refineObjects)]=$firstGeometry;}
+string $clearNames[]={};
+for($i in $refineObjects){
+    if(!stringArrayContains($i,$clearNames)) {
+        $clearNames[size($clearNames)]=$i;}}
+string $excludeNames[]={};
+for($i in $clearNames){
+    if ($i!="front" && $i!="top" && $i!="side" && $i!="persp"){
+        $excludeNames[size($excludeNames)]=$i;}}
+
+for($i in $excludeNames){
+    string $frameRange="-frameRange "+$abcStartFrame+" "+$abcEndFrame;
+    string $abcParam=" -uvWrite -worldSpace -writeVisibility -dataFormat ogawa ";
+    string $abcObject=" -root "+$i;
+    string $abcPath=$upperPath+"/"+$i+".abc";
+    string $melCommand=$frameRange+$abcParam+$abcObject+" -file "+$abcPath;
+    AbcExport -j $melCommand;}
